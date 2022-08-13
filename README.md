@@ -1,6 +1,10 @@
 # hexx
 Terminal based hex viewer written in Rust
 
+## Example
+
+![alt text](https://github.com/DaBaddest/hexx/blob/main/Images/example1.png)
+
 ## Usage
 ```
 A simple hex viewer written in Rust
