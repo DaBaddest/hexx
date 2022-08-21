@@ -35,14 +35,14 @@ fn color_code_char(elem: u8) -> String {
 }
 
 // Read the file contents and return them
-fn read_file(filename: String) -> Vec<u8> {
+fn read_file(filename: &String) -> Vec<u8> {
   let mut contents: Vec<u8> = Vec::new();
 
   let mut fp = fs::File::open(filename)
     .expect("Failed in opening file");
 
-  if fp.read_to_end(&mut contents).is_err(){
-    print_error_and_exit("Failed while reading file contents".to_string());
+  if fp.read_to_end(&mut contents).is_err() {
+    print_error("Failed while reading file contents".to_string());
   }
 
   return contents;
@@ -64,7 +64,7 @@ fn print_usage() {
 
 
   write!(usage,
-    "{}{:>8}{}", 
+    "{}{:>8}{}",
     "-e, --end:\n",
     "",
     "Specify the END index, processing of the file will end here\n\n")
@@ -72,7 +72,7 @@ fn print_usage() {
 
 
   write!(usage,
-    "{}{:>8}{}", 
+    "{}{:>8}{}",
     "-h, --help:\n",
     "",
     "Print this help message\n\n")
@@ -88,13 +88,13 @@ fn print_usage() {
     )
   .unwrap();
 
-
   println!("{}", usage);
 
-  process::exit(1);
+  process::exit(0);
 }
 
-fn print_error_and_exit(s: String) {
+// Prints the error message & exits the program
+fn print_error(s: String) {
   println!("\x1b[31mERROR: {}\x1b[0m", s);
   process::exit(1);
 }
@@ -149,7 +149,7 @@ fn parse_arguments() -> FileInfo {
 
         file_options.start = atoi(argv[i].as_str());
         if file_options.start == usize::MAX {
-          print_error_and_exit(
+          print_error(
             format!("Invalid argument given for start: {}", argv[i]));
         }
       }
@@ -165,7 +165,7 @@ fn parse_arguments() -> FileInfo {
 
         file_options.end = atoi(argv[i].as_str());
         if file_options.end == usize::MAX {
-          print_error_and_exit(
+          print_error(
             format!("Invalid argument given for end: {}", argv[i]));
         }
 
@@ -242,10 +242,12 @@ fn main() {
   // XXX: Perform validations on the parameters passed
   let mut fileinfo: FileInfo = parse_arguments();
 
-  let data = read_file(fileinfo.filename);
-  if fileinfo.end == 0 || fileinfo.end > data.len() {
-    fileinfo.end = data.len()
+  let file_contents = read_file(&fileinfo.filename);
+  if fileinfo.end == 0 || fileinfo.end > file_contents.len() {
+    fileinfo.end = file_contents.len()
   }
+
+
 
 
   print_header();
@@ -267,7 +269,7 @@ fn main() {
           write!(s, "   ").unwrap();
         }
         else {
-          write!(s, " {}", color_code_hex(data[i + j])).unwrap();
+          write!(s, " {}", color_code_hex(file_contents[i + j])).unwrap();
         }
       }
       if 7 == j {
@@ -288,7 +290,7 @@ fn main() {
           write!(s, " ").unwrap();
         }
         else {
-          write!(s, "{}", color_code_char(data[i + j])).unwrap();
+          write!(s, "{}", color_code_char(file_contents[i + j])).unwrap();
         }
       }
 
