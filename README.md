@@ -3,7 +3,7 @@ Terminal based hex viewer written in Rust
 
 ## Example
 
-![alt text](https://github.com/DaBaddest/hexx/blob/main/Images/example1.png)
+![Example image](https://github.com/DaBaddest/hexx/blob/main/Images/example1.png)
 
 ## Usage
 ```
@@ -16,6 +16,12 @@ Options:
 
 -e, --end:
         Specify the END index, processing of the file will end here
+
+-l, --lines:
+        Specify the number of lines to print
+
+-head, --head:
+        Print the first 10 lines of the file
 
 -h, --help:
         Print this help message
