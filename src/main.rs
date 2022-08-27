@@ -72,7 +72,7 @@ fn print_usage() {
 
   write!(usage,
     "{}{:>8}{}",
-    "-n, --no-of-lines:\n",
+    "-l, --lines:\n",
     "",
     "Specify the number of lines to print\n\n")
     .unwrap();
@@ -186,7 +186,7 @@ fn parse_arguments() -> FileInfo {
 
       }
 
-      "-n" | "--no-of-lines" => {
+      "-l" | "--lines" => {
         i += 1;
 
         // If incomplete commandline parameters passed
