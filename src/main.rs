@@ -13,7 +13,6 @@ struct FileInfo {
 
 const HEX_CHARSET: &'static str = "0123456789ABCDEF";
 
-
 fn color_code_hex(elem: u8) -> String {
   return match elem{
     0         => format!("\x1b[31m{:02x}\x1b[0m", elem),
@@ -73,6 +72,23 @@ fn print_usage() {
 
   write!(usage,
     "{}{:>8}{}",
+    "-n, --no-of-lines:\n",
+    "",
+    "Specify the number of lines to print\n\n")
+    .unwrap();
+
+
+  write!(usage,
+    "{}{:>8}{}",
+    "-head, --head:\n",
+    "",
+    "Print the first 10 lines of the file\n\n")
+    .unwrap();
+
+
+
+  write!(usage,
+    "{}{:>8}{}",
     "-h, --help:\n",
     "",
     "Print this help message\n\n")
@@ -84,9 +100,8 @@ fn print_usage() {
     "",
     "hexx -s 100 filename.bin\n",
     "",
-    "hexx --start 10 --end 0x40 filename.bin",
-    )
-  .unwrap();
+    "hexx --start 10 --end 0x40 filename.bin")
+    .unwrap();
 
   println!("{}", usage);
 
@@ -171,12 +186,35 @@ fn parse_arguments() -> FileInfo {
 
       }
 
+      "-n" | "--no-of-lines" => {
+        i += 1;
+
+        // If incomplete commandline parameters passed
+        if i >= argc - 1 {
+          println!("Error while parsing commandline argument");
+          process::exit(1);
+        }
+
+        // A line consists of 0x10(16) bytes
+        file_options.end = atoi(argv[i].as_str()) * 0x10;
+        if file_options.end == usize::MAX {
+          print_error(
+            format!("Invalid argument given for end: {}", argv[i]));
+        }
+
+      }
+
+      "--head" | "-head" => {
+        file_options.end = 0x100;
+      }
+
+
       "-h" | "--help" => {
         print_usage();
       }
 
       _ => {
-        println!("Invalid option {}", argv[i]);
+        print_error(format!("Invalid option {}", argv[i]));
       }
     }
 
@@ -247,11 +285,7 @@ fn main() {
     fileinfo.end = file_contents.len()
   }
 
-
-
-
   print_header();
-  
 
   let mut i = fileinfo.start - (fileinfo.start % 16);
   while i < fileinfo.end {
